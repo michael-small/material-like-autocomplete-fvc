@@ -5,18 +5,23 @@ import {
   forwardRef,
   input,
   model,
+  output,
   signal,
+  viewChild,
 } from "@angular/core";
 import {
+  Field,
   FormField,
   FormValueControl,
   required,
   transformedValue,
+  validate,
   ValidationError,
   WithOptionalFieldTree,
 } from "@angular/forms/signals";
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
-import { MatInputModule } from "@angular/material/input";
+import { ErrorStateMatcher } from "@angular/material/core";
+import { MatInput, MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { JsonPipe } from "@angular/common";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
@@ -61,20 +66,22 @@ export class Root {
     validators: Validators.required,
   });
   protected formField = form(signal<User | null>(null), (p) => {
-    required(p, { message: "test" });
+    required(p, { message: "Field is required" });
+    validate(p, ({ valueOf }) => {
+      const value = valueOf(p);
+      if (value?.name !== "Mary") {
+        return {
+          message: "Name must be Mary",
+          kind: "invalidName",
+        };
+      } else {
+        return;
+      }
+    });
   });
 
   protected addOption() {
     this.options.update((o) => [...o, { name: "Doug" }]);
-  }
-
-  constructor() {
-    effect(
-      () => {
-        console.log(this.options());
-      },
-      { debugName: "options effect" },
-    );
   }
 }
 
@@ -99,6 +106,19 @@ export class AutocompleteDisplayExample<
     readonly WithOptionalFieldTree<ValidationError>[]
   >([]);
   public readonly invalid = input<boolean>(false);
+  public readonly touched = input<boolean>(false);
+  readonly touch = output<void>();
+
+  private readonly matInput = viewChild(MatInput);
+  protected readonly errorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () =>
+      (this.invalid() || this.errors().length > 0) && this.touched(),
+    isSignalErrorState: (field: Field<unknown> | null) =>
+      (this.invalid() ||
+        this.errors().length > 0 ||
+        (field?.().invalid() ?? false)) &&
+      (this.touched() || (field?.().touched() ?? false)),
+  };
 
   readonly value = model<T | null>(null);
   readonly options = input.required<T[]>();
@@ -131,5 +151,18 @@ export class AutocompleteDisplayExample<
     return this.options().filter((option) =>
       valFn(option).toLowerCase().includes(filterValue),
     );
+  }
+
+  protected myErrors = computed(() =>
+    this.errors().map((err) => ({ message: err.message, kind: err.kind })),
+  );
+
+  constructor() {
+    effect(() => {
+      this.invalid();
+      this.errors();
+      this.touched();
+      this.matInput()?.updateErrorState();
+    });
   }
 }
