@@ -1,0 +1,28 @@
+<pre>value: {{value() | json}}</pre>
+<pre>rawValue: {{rawValue() | json}}</pre>
+<a href="https://angular.dev/guide/aria/autocomplete" target="_blank"
+  >TODO - convert to this, then make as a custom Material control</a
+>
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Assignee</mat-label>
+    <input
+      type="text"
+      matInput
+      [value]="rawValue()"
+      (input)="rawValue.set($event.target.value)"
+      [matAutocomplete]="auto"
+    />
+    @for (error of errors(); track error) {
+    <mat-error>{{ error.message }}</mat-error>
+    }
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="selectOption($event.option.value)"
+    >
+      @for (option of filteredOptions(); track option) {
+      <mat-option [value]="option">{{valFn()(option)}}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</form>
