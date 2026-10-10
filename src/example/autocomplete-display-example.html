@@ -4,8 +4,8 @@
 <form class="example-form">
   <mat-form-field class="example-full-width">
     <mat-label>Assignee</mat-label>
-    <input type="text" matInput [errorStateMatcher]="errorStateMatcher" [value]="rawValue()"
-      (input)="rawValue.set($event.target.value)" (blur)="touch.emit()" [matAutocomplete]="auto" />
+    <input matInput type="text" [errorStateMatcher]="errorStateMatcher" [matAutocomplete]="auto" [value]="rawValue()"
+      (blur)="touch.emit()" (input)="rawValue.set($event.target.value)" />
     @for (error of errors().slice(0, 1); track error) {
     <mat-error>{{ error.message ?? (error.kind === 'required' ? 'This field is required' : error.kind) }}</mat-error>
     }
