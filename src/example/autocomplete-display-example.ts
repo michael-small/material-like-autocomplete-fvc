@@ -28,9 +28,9 @@ import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form } from '@angular/forms/signals';
 
-export interface User {
+export type User = {
   name: string;
-}
+};
 
 @Component({
   selector: 'app-root',

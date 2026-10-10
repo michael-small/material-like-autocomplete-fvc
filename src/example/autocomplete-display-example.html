@@ -1,20 +1,31 @@
-<pre>value: {{value() | json}}</pre>
-<pre>rawValue: {{rawValue() | json}}</pre>
+<pre>value: {{ value() | json }}</pre>
+<pre>rawValue: {{ rawValue() | json }}</pre>
 
 <form class="example-form">
   <mat-form-field class="example-full-width">
     <mat-label>Assignee</mat-label>
-    <input matInput type="text" [errorStateMatcher]="errorStateMatcher" [matAutocomplete]="auto" [value]="rawValue()"
-      (blur)="touch.emit()" (input)="rawValue.set($event.target.value)" />
+    <input
+      matInput
+      type="text"
+      [errorStateMatcher]="errorStateMatcher"
+      [matAutocomplete]="auto"
+      [value]="rawValue()"
+      (blur)="touch.emit()"
+      (input)="rawValue.set($event.target.value)" />
     @for (error of errors().slice(0, 1); track error) {
-    <mat-error>{{ error.message ?? (error.kind === 'required' ? 'This field is required' : error.kind) }}</mat-error>
+      <mat-error>{{
+        error.message ??
+          (error.kind === 'required' ? 'This field is required' : error.kind)
+      }}</mat-error>
     }
-    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOption($event.option.value)">
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      (optionSelected)="selectOption($event.option.value)">
       @for (option of filteredOptions(); track option) {
-      <mat-option [value]="option">{{valFn()(option)}}</mat-option>
+        <mat-option [value]="option">{{ valFn()(option) }}</mat-option>
       }
     </mat-autocomplete>
   </mat-form-field>
 </form>
 
-<pre>{{myErrors() | json}}</pre>
+<pre>{{ myErrors() | json }}</pre>
