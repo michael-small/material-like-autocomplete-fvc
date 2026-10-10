@@ -1,0 +1,41 @@
+.option {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 3rem;
+  border-radius: 4px;
+  outline: none;
+}
+
+.option:hover {
+  background-color: var(--autocomplete-hover);
+}
+
+.option[data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px solid var(--autocomplete-primary);
+}
+
+.option[aria-selected='true'] {
+  color: var(--autocomplete-on-selected);
+  background-color: var(--autocomplete-selected);
+}
+
+.option:not([aria-selected='true']) .check-icon {
+  display: none;
+}
+
+.option-label {
+  flex: 1;
+}
+
+.check-icon {
+  font-size: 0.9rem;
+}
+
+.material-symbols-outlined {
+  font-size: 1.25rem;
+  pointer-events: none;
+}

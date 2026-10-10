@@ -13,6 +13,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AriaAutocompleteOption } from './aria-autocomplete-option';
 
 @Component({
   selector: 'app-aria-autocomplete',
@@ -26,6 +27,7 @@ import { FormsModule } from '@angular/forms';
     Option,
     OverlayModule,
     FormsModule,
+    AriaAutocompleteOption,
   ],
 })
 export class AriaAutocomplete {

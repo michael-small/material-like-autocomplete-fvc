@@ -1,21 +1,5 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
 
-:host,
-.popup {
-  --autocomplete-primary: var(--mat-sys-primary, #6750a4);
-  --autocomplete-on-surface: var(--mat-sys-on-surface, #1d1b20);
-  --autocomplete-on-surface-variant: var(--mat-sys-on-surface-variant, #49454f);
-  --autocomplete-outline: var(--mat-sys-outline, #79747e);
-  --autocomplete-surface: var(--mat-sys-surface-container, #f3edf7);
-  --autocomplete-hover: color-mix(
-    in srgb,
-    var(--autocomplete-on-surface) 8%,
-    transparent
-  );
-  --autocomplete-selected: var(--mat-sys-secondary-container, #e8def8);
-  --autocomplete-on-selected: var(--mat-sys-on-secondary-container, #1d192b);
-}
-
 :host {
   display: flex;
   justify-content: center;
@@ -32,11 +16,6 @@
   display: flex;
   position: relative;
   align-items: center;
-}
-
-.material-symbols-outlined {
-  font-size: 1.25rem;
-  pointer-events: none;
 }
 
 .search-icon {
@@ -91,43 +70,6 @@
   overflow: auto;
   flex-direction: column;
   outline: none;
-}
-
-.option {
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  margin: 1px;
-  padding: 0 1rem;
-  min-height: 3rem;
-  border-radius: 4px;
-  outline: none;
-}
-
-.option:hover {
-  background-color: var(--autocomplete-hover);
-}
-
-.option[data-active='true'] {
-  outline-offset: -2px;
-  outline: 2px solid var(--autocomplete-primary);
-}
-
-.option[aria-selected='true'] {
-  color: var(--autocomplete-on-selected);
-  background-color: var(--autocomplete-selected);
-}
-
-.option:not([aria-selected='true']) .check-icon {
-  display: none;
-}
-
-.option-label {
-  flex: 1;
-}
-
-.check-icon {
-  font-size: 0.9rem;
 }
 
 .clear-button {

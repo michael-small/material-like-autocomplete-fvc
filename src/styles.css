@@ -8,3 +8,18 @@ body {
 html {
   height: 100%;
 }
+
+:root {
+  --autocomplete-primary: var(--mat-sys-primary, #6750a4);
+  --autocomplete-on-surface: var(--mat-sys-on-surface, #1d1b20);
+  --autocomplete-on-surface-variant: var(--mat-sys-on-surface-variant, #49454f);
+  --autocomplete-outline: var(--mat-sys-outline, #79747e);
+  --autocomplete-surface: var(--mat-sys-surface-container, #f3edf7);
+  --autocomplete-hover: color-mix(
+    in srgb,
+    var(--autocomplete-on-surface) 8%,
+    transparent
+  );
+  --autocomplete-selected: var(--mat-sys-secondary-container, #e8def8);
+  --autocomplete-on-selected: var(--mat-sys-on-secondary-container, #1d192b);
+}
