@@ -54,7 +54,12 @@
           (click)="onCommit()"
           (keydown.enter)="onCommit()">
           @for (country of countries(); track country) {
-            <div class="option" ngOption [label]="country" [value]="country">
+            <div
+              class="option"
+              ngOption
+              [label]="country"
+              [value]="country"
+              (mousedown)="$event.preventDefault()">
               <span class="option-label">{{ country }}</span>
               <span
                 aria-hidden="true"

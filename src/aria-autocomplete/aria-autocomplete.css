@@ -12,14 +12,8 @@
     var(--autocomplete-on-surface) 8%,
     transparent
   );
-  --autocomplete-selected: var(
-    --mat-sys-secondary-container,
-    #e8def8
-  );
-  --autocomplete-on-selected: var(
-    --mat-sys-on-secondary-container,
-    #1d192b
-  );
+  --autocomplete-selected: var(--mat-sys-secondary-container, #e8def8);
+  --autocomplete-on-selected: var(--mat-sys-on-secondary-container, #1d192b);
 }
 
 :host {

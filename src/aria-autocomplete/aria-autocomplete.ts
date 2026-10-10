@@ -78,8 +78,8 @@ export class AriaAutocomplete {
 }
 
 const ALL_COUNTRIES = [
-  'Afghanistan',
   'Albania',
+  'Afghanistan',
   'Algeria',
   'Andorra',
   'Angola',
