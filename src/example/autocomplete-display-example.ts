@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -30,6 +29,7 @@ import { form } from '@angular/forms/signals';
 
 export type User = {
   name: string;
+  id: number;
 };
 
 @Component({
@@ -58,7 +58,11 @@ export type User = {
   ],
 })
 export class Root {
-  readonly #options = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
+  readonly #options = [
+    { name: 'Mary', id: 1 },
+    { name: 'Shelley', id: 2 },
+    { name: 'Igor', id: 3 },
+  ] satisfies User[];
   readonly options = signal(this.#options);
 
   protected formControl = new FormControl<User | null>(null, {
@@ -80,7 +84,7 @@ export class Root {
   });
 
   protected addOption() {
-    this.options.update(o => [...o, { name: 'Doug' }]);
+    this.options.update(o => [...o, { name: 'Doug', id: 4 }]);
   }
 }
 
