@@ -26,6 +26,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form } from '@angular/forms/signals';
+import { AriaAutocomplete } from '../aria-autocomplete/aria-autocomplete';
 
 export type User = {
   name: string;
@@ -35,6 +36,8 @@ export type User = {
 @Component({
   selector: 'app-root',
   template: `
+    <app-aria-autocomplete />
+
     <button type="button" (click)="addOption()">Add Option</button>
 
     <pre>formControl value: {{ formControl.value | json }}</pre>
@@ -55,6 +58,7 @@ export type User = {
     ReactiveFormsModule,
     JsonPipe,
     FormField,
+    AriaAutocomplete,
   ],
 })
 export class Root {

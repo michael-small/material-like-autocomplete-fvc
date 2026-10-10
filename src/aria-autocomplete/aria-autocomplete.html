@@ -1,0 +1,71 @@
+<div class="autocomplete-container">
+  <div #origin class="material-autocomplete">
+    <span
+      aria-hidden="true"
+      class="search-icon material-symbols-outlined"
+      translate="no"
+      >search</span
+    >
+    <input
+      #combobox="ngCombobox"
+      class="autocomplete-input"
+      ngCombobox
+      placeholder="Select a country"
+      [(expanded)]="popupExpanded"
+      [(value)]="query"
+      (click)="popupExpanded.set(true)"
+      (focusout)="onBlur()" />
+    <button
+      aria-label="Clear"
+      class="clear-button"
+      type="button"
+      (click)="clear()"
+      (mousedown)="$event.preventDefault()">
+      <span
+        aria-hidden="true"
+        class="clear-icon material-symbols-outlined"
+        translate="no"
+        >close</span
+      >
+    </button>
+  </div>
+
+  <div aria-live="polite" class="cdk-visually-hidden">
+    {{ countries().length === 0 ? 'No results found for ' + query() : '' }}
+  </div>
+
+  <ng-template
+    [cdkConnectedOverlay]="{ origin, usePopover: 'inline', matchWidth: true }"
+    [cdkConnectedOverlayOpen]="popupExpanded()">
+    <ng-template ngComboboxPopup [combobox]="combobox">
+      <div class="popup">
+        @if (countries().length === 0) {
+          <div class="no-results">No results found</div>
+        }
+        <div
+          #listbox="ngListbox"
+          class="listbox"
+          focusMode="activedescendant"
+          ngComboboxWidget
+          ngListbox
+          [activeDescendant]="listbox.activeDescendant()"
+          [tabindex]="-1"
+          [(value)]="selectedOption"
+          (click)="onCommit()"
+          (keydown.enter)="onCommit()">
+          @for (country of countries(); track country) {
+            <div class="option" ngOption [label]="country" [value]="country">
+              <span class="option-label">{{ country }}</span>
+              <span
+                aria-hidden="true"
+                class="check-icon material-symbols-outlined"
+                translate="no"
+                >check</span
+              >
+            </div>
+          }
+        </div>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>
