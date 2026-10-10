@@ -6,7 +6,7 @@
     <mat-label>Assignee</mat-label>
     <input type="text" matInput [errorStateMatcher]="errorStateMatcher" [value]="rawValue()"
       (input)="rawValue.set($event.target.value)" (blur)="touch.emit()" [matAutocomplete]="auto" />
-    @for (error of errors(); track error) {
+    @for (error of errors().slice(0, 1); track error) {
     <mat-error>{{ error.message ?? (error.kind === 'required' ? 'This field is required' : error.kind) }}</mat-error>
     }
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOption($event.option.value)">
