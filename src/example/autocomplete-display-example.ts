@@ -40,7 +40,8 @@ export type User = {
 
     <button type="button" (click)="addOption()">Add Option</button>
 
-    <pre>formControl value: {{ formControl.value | json }}</pre>
+    <!-- This stuff isn't fully baked, WIP -->
+    <!-- <pre>formControl value: {{ formControl.value | json }}</pre>
     <app-autocomplete-display-example
       [formControl]="formControl"
       [options]="options()"
@@ -50,7 +51,7 @@ export type User = {
     <app-autocomplete-display-example
       [formField]="formField"
       [options]="options()"
-      [valFnInput]="user => user.name" />
+      [valFnInput]="user => user.name" /> -->
   `,
   styleUrl: 'autocomplete-display-example.css',
   imports: [
