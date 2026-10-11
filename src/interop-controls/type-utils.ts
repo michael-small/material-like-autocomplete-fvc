@@ -14,11 +14,10 @@ export type FormValueOf<T extends AbstractControl> =
   T extends FormControl<infer TControl>
     ? TControl
     : T extends FormGroup<infer TGroup>
-      ? { [K in keyof TGroup]: SignalFormValueOf<TGroup[K]> }
+      ? { [K in keyof TGroup]: FormValueOf<TGroup[K]> }
       : T extends FormArray<infer TElement>
-        ? SignalFormValueOf<TElement>[]
+        ? FormValueOf<TElement>[]
         : T;
-
 /**
  * @description `FormValueOf` but for `SignalFormControl` typing
  * @link https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
