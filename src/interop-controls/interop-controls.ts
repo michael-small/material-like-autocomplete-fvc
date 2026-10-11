@@ -11,6 +11,11 @@ import { ProfileFormService } from './form';
 @Component({
   selector: 'app-interop-controls',
   template: `
+    <p>
+      In this example, the form is hardcoded to have an email validator if your
+      name is John Email.
+    </p>
+
     <form [formGroup]="profileForm">
       @let controls = profileForm.controls;
       <mat-form-field>
