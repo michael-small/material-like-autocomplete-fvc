@@ -34,7 +34,7 @@ export type User = {
 };
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-autocomplete-display-root',
   template: `
     <app-interop-controls />
 
@@ -62,7 +62,7 @@ export type User = {
     InteropControls,
   ],
 })
-export class Root {
+export class AutocompleteDisplayRoot {
   readonly #options = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
   readonly options = signal(this.#options);
 

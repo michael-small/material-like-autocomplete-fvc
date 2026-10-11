@@ -9,9 +9,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { VERSION as CDK_VERSION } from '@angular/cdk';
 import { VERSION as MAT_VERSION } from '@angular/material/core';
-import { Root } from './example/autocomplete-display-example';
+import { Component } from '@angular/core';
+import { AutocompleteDisplayRoot } from './example/autocomplete-display-example';
 
 console.info('Angular CDK version', CDK_VERSION.full);
 console.info('Angular Material version', MAT_VERSION.full);
 
-bootstrapApplication(Root).catch((err) => console.error(err));
+@Component({
+  selector: 'app-root',
+  template: ` <app-autocomplete-display-root /> `,
+  imports: [AutocompleteDisplayRoot],
+})
+class Root {}
+
+bootstrapApplication(Root).catch(err => console.error(err));
