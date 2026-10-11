@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject, Service } from '@angular/core';
+import { Component, effect, inject, Service } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -104,8 +104,8 @@ class ProfileFormService {
 @Component({
   selector: 'app-interop-controls',
   template: `
-    <form [formGroup]="ProfileForm">
-      @let controls = ProfileForm.controls;
+    <form [formGroup]="profileForm">
+      @let controls = profileForm.controls;
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput [formField]="controls.name.fieldTree" />
@@ -127,7 +127,7 @@ class ProfileFormService {
       </mat-form-field>
     </form>
 
-    <pre>Form raw value: {{ ProfileForm.getRawValue() | json }}</pre>
+    <pre>Form raw value: {{ profileForm.getRawValue() | json }}</pre>
   `,
   imports: [
     MatFormField,
@@ -140,7 +140,7 @@ class ProfileFormService {
 })
 export class InteropControls {
   readonly #profileFormService = inject(ProfileFormService);
-  protected ProfileForm = this.#profileFormService.profileForm;
+  protected profileForm = this.#profileFormService.profileForm;
 
   constructor() {
     this.#profileFormService.initializeForm({
