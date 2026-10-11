@@ -12,8 +12,6 @@ import {
   Signal,
 } from '@angular/core';
 import {
-  AbstractControl,
-  FormArray,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
@@ -108,14 +106,6 @@ class ProfileFormService {
     });
 
     this.profileForm.setValue(tempForm.getRawValue());
-
-    const fc = new FormControl<string>('');
-    const a = fc.value;
-    const b = fc.getRawValue();
-
-    const fcNon = new FormControl<string>('');
-    const aa = fcNon.value;
-    const bb = fcNon.getRawValue();
   }
 }
 
@@ -145,15 +135,15 @@ class ProfileFormService {
       </mat-form-field>
     </form>
 
-    <!-- Ban this too -->
+    <!-- Banned by linnting this too -->
     <pre>{{ profileForm.getRawValue() | json }}</pre>
 
-    <!-- Ban this as well -->
+    <!-- Ban this as well by linnting  -->
     <pre>{{ profileForm.value }}</pre>
 
-    <!-- Allow this -->
+    <!-- Allow this by linnting -->
     <pre>{{ profileFormData().value }}</pre>
-    <!-- Allow this -->
+    <!-- Allow this by linnting -->
     <pre>{{ profileForm.controls.email.fieldTree().value() }}</pre>
   `,
   imports: [
@@ -176,13 +166,23 @@ export class InteropControls {
       name: 'John Email',
     });
 
-    // Ban these following four
+    // No problem with linting
+    const fc = new FormControl<string>('');
+    const a = fc.value;
+    const b = fc.getRawValue();
+
+    // No problem with linting
+    const fcNon = new FormControl<string>('');
+    const aa = fcNon.value;
+    const bb = fcNon.getRawValue();
+
+    // Banned these following four with linting
     const banThis = this.profileForm.value;
     const banThisToo = this.profileForm.getRawValue();
     const alsoBanThis = this.profileForm.controls.email.value;
     const alsoBanThisToo = this.profileForm.controls.email.getRawValue();
 
-    // But allow these
+    // But allowed these
     const thisIsValid = this.profileForm.controls.email.fieldTree().value;
     const alsoThisIsValid = this.profileFormData().value;
 
