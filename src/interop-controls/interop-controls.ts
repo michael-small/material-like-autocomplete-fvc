@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { JsonPipe } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -34,15 +35,28 @@ import { ProfileFormService } from './form';
     </form>
 
     <!-- Banned by linnting this too -->
-    <pre>{{ profileForm.getRawValue() | json }}</pre>
+    <pre>
+BANNED profileForm.getRawValue(): {{ profileForm.getRawValue() | json }}
+    </pre>
 
     <!-- Ban this as well by linnting  -->
-    <pre>{{ profileForm.value }}</pre>
+    <pre>BANNED profileForm.value: {{ profileForm.value | json }}</pre>
 
     <!-- Allow this by linnting -->
-    <pre>{{ profileFormData().value }}</pre>
+    <pre>
+ALLOWED profileFormData().value (util): {{
+        profileFormData().value | json
+      }}</pre>
     <!-- Allow this by linnting -->
-    <pre>{{ profileForm.controls.email.fieldTree().value() }}</pre>
+    <pre>
+ALLOWED profileForm.controls.email.fieldTree().value() {{
+        profileForm.controls.email.fieldTree().value()
+      }}</pre>
+
+    <p>
+      See the "lintingExample()" private function for in-editor examples of more
+      good and bad linting type examples.
+    </p>
   `,
   imports: [
     MatFormField,
@@ -64,7 +78,18 @@ export class InteropControls {
       name: 'John Email',
     });
 
-    // No problem with linting
+    this.lintingExample();
+  }
+
+  /**
+   * @description See in editor how linting helps enforce proper typing using my utils
+   */
+  private lintingExample() {
+    console.warn(
+      'Check out my component for how linting covers the type issue!'
+    );
+
+    // Regular reactive forms have no problem with linting
     const fc = new FormControl<string>('');
     const a = fc.value;
     const b = fc.getRawValue();
@@ -115,9 +140,5 @@ export class InteropControls {
 
     // Typed!!! And throws in other form data that can be reacted to downstream of the main signal
     const formValueFromUtil = this.#profileFormService.profileFormData; // need to still invoke this + `().value`
-
-    effect(() => {
-      console.log(formValueFromUtil());
-    });
   }
 }
