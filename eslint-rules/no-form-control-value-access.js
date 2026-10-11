@@ -2,21 +2,12 @@
 
 const ts = require('typescript');
 
-const formControlTypeNames = new Set([
-  'AbstractControl',
-  'FormArray',
-  'FormControl',
-  'FormGroup',
-  'FormRecord',
-  'SignalFormControl',
-]);
-
 module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description:
-        'Disallow reading values directly from Angular form controls',
+        'Disallow reading values directly from signal-backed Angular forms',
     },
     messages: {
       noFormValue:
@@ -36,33 +27,65 @@ module.exports = {
 
     const checker = program.getTypeChecker();
 
-    function isFormControlType(type, visited = new Set()) {
-      if (!type || visited.has(type)) {
+    function hasSignalFormControl(type, visited = new Set()) {
+      if (!type || type.flags & ts.TypeFlags.Any || visited.has(type)) {
         return false;
       }
       visited.add(type);
 
       if (type.isUnionOrIntersection()) {
-        return type.types.some(member => isFormControlType(member, visited));
+        return type.types.some(member =>
+          hasSignalFormControl(member, visited)
+        );
       }
 
-      const symbol = type.aliasSymbol || type.getSymbol();
-      if (symbol && formControlTypeNames.has(symbol.getName())) {
+      const symbol = type.getSymbol();
+      const typeSymbols = [symbol, type.aliasSymbol].filter(Boolean);
+      if (
+        typeSymbols.some(
+          typeSymbol => typeSymbol.getName() === 'SignalFormControl'
+        )
+      ) {
         return true;
       }
 
       if (
-        type.flags & ts.TypeFlags.Object &&
-        symbol &&
-        symbol.declarations?.some(
-          declaration =>
-            ts.isClassDeclaration(declaration) ||
-            ts.isInterfaceDeclaration(declaration)
+        typeSymbols.some(typeSymbol =>
+          ['FormGroup', 'FormRecord'].includes(typeSymbol.getName())
         )
       ) {
-        return checker
-          .getBaseTypes(type)
-          .some(baseType => isFormControlType(baseType, visited));
+        const controlsType =
+          type.flags & ts.TypeFlags.Object &&
+          type.objectFlags & ts.ObjectFlags.Reference
+            ? checker.getTypeArguments(type)[0]
+            : undefined;
+
+        return (
+          controlsType?.getProperties().some(property => {
+            const declaration =
+              property.valueDeclaration || property.declarations?.[0];
+            return (
+              declaration &&
+              hasSignalFormControl(
+                checker.getTypeOfSymbolAtLocation(property, declaration),
+                visited
+              )
+            );
+          }) ?? false
+        );
+      }
+
+      if (
+        typeSymbols.some(typeSymbol => typeSymbol.getName() === 'FormArray')
+      ) {
+        const controlType =
+          type.flags & ts.TypeFlags.Object &&
+          type.objectFlags & ts.ObjectFlags.Reference
+            ? checker.getTypeArguments(type)[0]
+            : undefined;
+        return controlType
+          ? hasSignalFormControl(controlType, visited)
+          : false;
       }
 
       return false;
@@ -72,7 +95,7 @@ module.exports = {
       const object = esTreeNodeToTSNodeMap.get(member.object);
       const type = checker.getTypeAtLocation(object);
 
-      if (isFormControlType(type)) {
+      if (hasSignalFormControl(type)) {
         context.report({
           node: member.property,
           messageId: 'noFormValue',

@@ -25,44 +25,7 @@ import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, timer } from 'rxjs';
-
-/**
- * @description Converts a form control / form group to its underlying value's type
- * @link https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
- */
-export type FormValueOf<T extends AbstractControl> =
-  T extends FormControl<infer TControl>
-    ? TControl
-    : T extends FormGroup<infer TGroup>
-      ? { [K in keyof TGroup]: SignalFormValueOf<TGroup[K]> }
-      : T extends FormArray<infer TElement>
-        ? SignalFormValueOf<TElement>[]
-        : T;
-
-/**
- * @description `FormValueOf` but for `SignalFormControl` typing
- * @link https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
- */
-export type SignalFormValueOf<T extends AbstractControl> =
-  T extends SignalFormControl<infer TControl>
-    ? TControl
-    : T extends FormGroup<infer TGroup>
-      ? { [K in keyof TGroup]: SignalFormValueOf<TGroup[K]> }
-      : T extends FormArray<infer TElement>
-        ? SignalFormValueOf<TElement>[]
-        : T;
-
-// Converts the raw value of a form back to individual regular old form controls
-// Intermediate for the next type
-type FormControlsOf<T extends object> = {
-  [K in keyof T]: FormControl<T[K]>;
-};
-
-/**
- * @description Launders the typing of a SignalFormControl grouping to regular FormControl grouping
- */
-type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
-  FormControlsOf<SignalFormValueOf<FormGroup<T>>>;
+import { SigFCsToRegularFCs, SignalFormValueOf } from './type-utils';
 
 /**
  * {
@@ -145,6 +108,14 @@ class ProfileFormService {
     });
 
     this.profileForm.setValue(tempForm.getRawValue());
+
+    const fc = new FormControl<string>('');
+    const a = fc.value;
+    const b = fc.getRawValue();
+
+    const fcNon = new FormControl<string>('');
+    const aa = fcNon.value;
+    const bb = fcNon.getRawValue();
   }
 }
 
