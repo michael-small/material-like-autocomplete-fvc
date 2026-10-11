@@ -17,6 +17,18 @@ import { MatInputModule } from '@angular/material/input';
  * @description Converts a form control / form group to its underlying value's type
  * @link https://blog.flensrocker.de/angular/utils/forms/2024/09/18/angular-utils-form-value-of.html
  */
+export type FormValueOf<T extends AbstractControl> =
+  T extends FormControl<infer TControl>
+    ? TControl
+    : T extends FormGroup<infer TGroup>
+      ? { [K in keyof TGroup]: SignalFormValueOf<TGroup[K]> }
+      : T extends FormArray<infer TElement>
+        ? SignalFormValueOf<TElement>[]
+        : T;
+
+/**
+ * @description `FormValueOf` but for `SignalFormControl` typing
+ */
 export type SignalFormValueOf<T extends AbstractControl> =
   T extends SignalFormControl<infer TControl>
     ? TControl
@@ -38,6 +50,13 @@ type FormControlsOf<T extends object> = {
 type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
   FormControlsOf<SignalFormValueOf<FormGroup<T>>>;
 
+/**
+ * {
+    readonly name: string;
+    readonly email: string;
+   } 
+ */
+type MyFormValue = SignalFormValueOf<FormGroup<MyForm>>;
 class MyForm {
   public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
@@ -64,10 +83,10 @@ class MyFormService {
   readonly #fb = inject(NonNullableFormBuilder);
   public myForm = new FormGroup(new MyForm());
 
-  public initializeForm() {
+  public initializeForm(value: MyFormValue) {
     const tempForm = this.#fb.group<SigFCsToRegularFCs<MyForm>>({
-      name: this.#fb.control('John Email'),
-      email: this.#fb.control('test'),
+      name: this.#fb.control(value.name),
+      email: this.#fb.control(value.email),
     });
 
     this.myForm.setValue(tempForm.getRawValue());
@@ -117,15 +136,6 @@ export class InteropControls {
   protected myForm = this.#myFormService.myForm;
 
   constructor() {
-    // IMPORTANT!
-    //     Will not work in `ngOnInit`,
-    //     since an injection context follows from:
-    // --> `SignalFormControl` needs one
-    // --> So the `MyForm` class needs one
-    // --> So the service's form group needs one
-  }
-
-  ngOnInit() {
-    this.#myFormService.initializeForm();
+    this.#myFormService.initializeForm({ email: 'Test', name: 'John Email' });
   }
 }
