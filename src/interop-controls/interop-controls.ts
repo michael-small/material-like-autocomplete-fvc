@@ -15,7 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 
 /**
  * @description Converts a form control / form group to its underlying value's type
- * @link https://blog.flensrocker.de/angular/utils/forms/2024/09/18/angular-utils-form-value-of.html
+ * @link https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
  */
 export type FormValueOf<T extends AbstractControl> =
   T extends FormControl<infer TControl>
@@ -28,6 +28,7 @@ export type FormValueOf<T extends AbstractControl> =
 
 /**
  * @description `FormValueOf` but for `SignalFormControl` typing
+ * @link https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
  */
 export type SignalFormValueOf<T extends AbstractControl> =
   T extends SignalFormControl<infer TControl>
@@ -94,6 +95,9 @@ class ProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
   public profileForm = new FormGroup(new ProfileForm());
 
+  // TODO - grab the form value using my util, so typing preserved and full form reactive
+  // https://ngxtension.dev/utilities/forms/form-events/
+
   public initializeForm(value: ProfileFormValue) {
     const tempForm = this.#fb.group<SigFCsToRegularFCs<ProfileForm>>({
       name: this.#fb.control(value.name),
@@ -152,11 +156,13 @@ export class InteropControls {
     });
 
     effect(() => {
-      // `fieldTree` of each is properly typed
+      // `fieldTree` of each control is properly typed
       // `WritableSignal<string>`
       const valueFieldTree = this.profileForm.controls.email.fieldTree().value;
 
-      // HOWEVER, entire group is not typed
+      // HOWEVER, the entire group has the field names and shape consistent, but `any` values
+      // This is a restriction for `SignalFormControl` when you can't read the `fieldTree` directly.
+      // https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
       /**
        * {
             readonly name: any;
