@@ -1,10 +1,42 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject, Service } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+
+/**
+ * @description Converts a form control / form group to its underlying value's type
+ * @link https://blog.flensrocker.de/angular/utils/forms/2024/09/18/angular-utils-form-value-of.html
+ */
+export type SignalFormValueOf<T extends AbstractControl> =
+  T extends SignalFormControl<infer TControl>
+    ? TControl
+    : T extends FormGroup<infer TGroup>
+      ? { [K in keyof TGroup]: SignalFormValueOf<TGroup[K]> }
+      : T extends FormArray<infer TElement>
+        ? SignalFormValueOf<TElement>[]
+        : T;
+
+// Converts the raw value of a form back to individual regular old form controls
+// Intermediate for the next type
+type FormControlsOf<T extends object> = {
+  [K in keyof T]: FormControl<T[K]>;
+};
+
+/**
+ * @description Launders the typing of a SignalFormControl grouping to regular FormControl grouping
+ */
+type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
+  FormControlsOf<SignalFormValueOf<FormGroup<T>>>;
 
 class MyForm {
   public readonly name = new SignalFormControl('', p => {
@@ -29,12 +61,15 @@ class MyForm {
 
 @Service()
 class MyFormService {
+  readonly #fb = inject(NonNullableFormBuilder);
   public myForm = new FormGroup(new MyForm());
 
   public initializeForm() {
-    const tempForm = new FormGroup(
-      new MyForm({ email: '', name: 'John Email' })
-    );
+    const tempForm = this.#fb.group<SigFCsToRegularFCs<MyForm>>({
+      name: this.#fb.control('John Email'),
+      email: this.#fb.control('test'),
+    });
+
     this.myForm.setValue(tempForm.getRawValue());
   }
 }
@@ -88,6 +123,9 @@ export class InteropControls {
     // --> `SignalFormControl` needs one
     // --> So the `MyForm` class needs one
     // --> So the service's form group needs one
+  }
+
+  ngOnInit() {
     this.#myFormService.initializeForm();
   }
 }
