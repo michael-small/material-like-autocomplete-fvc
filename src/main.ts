@@ -21,6 +21,13 @@ console.info('Angular Material version', MAT_VERSION.full);
   template: `
     <h1>Form Experimentation</h1>
 
+    <p>
+      <a href="https://youtu.be/qZiywIvbPEw?t=2063" target="_blank">
+        As famously featured on "Let's Review Some Community Angular Code" by
+        Jason Warner.</a
+      >
+    </p>
+
     <h2>
       Started out with this example, for a custom Material autocomplete for
       reactive/signal forms
