@@ -4,6 +4,14 @@ const eslint = require('@eslint/js');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const eslintConfigPrettier = require('eslint-config-prettier');
+const noFormControlValueAccess = require('./eslint-rules/no-form-control-value-access');
+const noFormControlValueAccessTemplate = require('./eslint-rules/no-form-control-value-access-template');
+const localPlugin = {
+  rules: {
+    'no-form-control-value-access': noFormControlValueAccess,
+    'no-form-control-value-access-template': noFormControlValueAccessTemplate,
+  },
+};
 
 module.exports = tseslint.config(
   {
@@ -17,6 +25,15 @@ module.exports = tseslint.config(
       eslintConfigPrettier,
     ],
     processor: angular.processInlineTemplates,
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.eslint.json'],
+        tsconfigRootDir: __dirname,
+      },
+    },
+    plugins: {
+      local: localPlugin,
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -58,6 +75,7 @@ module.exports = tseslint.config(
       '@typescript-eslint/no-inferrable-types': 'warn',
       '@typescript-eslint/no-shadow': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'local/no-form-control-value-access': 'error',
 
       // JavaScript best practices
       eqeqeq: 'error',
@@ -102,7 +120,11 @@ module.exports = tseslint.config(
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
     ],
+    plugins: {
+      local: localPlugin,
+    },
     rules: {
+      'local/no-form-control-value-access-template': 'error',
       // Angular template best practices
       '@angular-eslint/template/attributes-order': [
         'error',
