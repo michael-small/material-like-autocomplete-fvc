@@ -1,5 +1,12 @@
 import { JsonPipe } from '@angular/common';
-import { Component, effect, inject, Service } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  Service,
+  signal,
+  Signal,
+} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -8,7 +15,7 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { email, FormField, required } from '@angular/forms/signals';
+import { disabled, email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,6 +23,8 @@ import { MatInputModule } from '@angular/material/input';
 // https://ngxtension.dev/utilities/forms/form-events/
 // Copy the source code (self contained one file with no non-Angular 1st party improts)
 import { allEventsSignal } from './form-events';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map, startWith, timer } from 'rxjs';
 
 /**
  * @description Converts a form control / form group to its underlying value's type
@@ -77,8 +86,13 @@ type ProfileFormValue = SignalFormValueOf<FormGroup<ProfileForm>>;
  * state as signals! And just reference that for proper typing.
  */
 class ProfileForm {
+  #extData = signal({ loading: false });
+
   public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
+    disabled(p, {
+      when: () => this.#extData().loading,
+    });
   });
   public readonly email = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
@@ -89,18 +103,36 @@ class ProfileForm {
       },
       message: 'Must be an email',
     });
+    disabled(p, {
+      when: () => this.#extData().loading,
+    });
   });
 
-  constructor(value?: { name: string; email: string }) {
+  constructor(
+    value: { name: string; email: string },
+    externalData: Signal<boolean>
+  ) {
     this.name.setValue(value?.name);
     this.email.setValue(value?.email);
+
+    effect(() => this.#extData.set({ loading: externalData() }), {
+      debugName: 'set external data',
+    });
   }
 }
 
 @Service()
 class ProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
-  public profileForm = new FormGroup(new ProfileForm());
+
+  // Fake 2 second load for form fields to be disabled
+  public loading = toSignal(timer(2000).pipe(map(() => false)), {
+    initialValue: true,
+  });
+
+  public profileForm = new FormGroup(
+    new ProfileForm({ name: '', email: '' }, this.loading)
+  );
 
   // https://ngxtension.dev/utilities/forms/form-events/
   // Copy the source code (self contained one file with no non-Angular 1st party improts)
