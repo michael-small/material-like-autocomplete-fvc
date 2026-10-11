@@ -94,11 +94,6 @@ export class InteropControls {
     const a = fc.value;
     const b = fc.getRawValue();
 
-    // No problem with linting
-    const fcNon = new FormControl<string>('');
-    const aa = fcNon.value;
-    const bb = fcNon.getRawValue();
-
     // Banned these following four with linting
     const banThis = this.profileForm.value;
     const banThisToo = this.profileForm.getRawValue();
