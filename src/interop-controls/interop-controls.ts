@@ -59,11 +59,14 @@ type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
 type ProfileFormValue = SignalFormValueOf<FormGroup<ProfileForm>>;
 
 /**
- * @description I used to do this pattern but with `new FormControl` etc. Now I can
+ * @description I used to do this pattern but with `new FormControl` etc. Now I can:
  * - Declarative cross form field validation with typing
  * - Declarative rules like `disabled`
  * - Messages for errors
  * - Drop in signal form schemas
+ *
+ * BUT, there is one typing bummer, but it is mitigated by these mapped types IMO
+ * See the bottom of this file where I breakdown types
  */
 class ProfileForm {
   public readonly name = new SignalFormControl('', p => {
@@ -146,6 +149,32 @@ export class InteropControls {
     this.#profileFormService.initializeForm({
       email: 'Test',
       name: 'John Email',
+    });
+
+    effect(() => {
+      // `fieldTree` of each is properly typed
+      // `WritableSignal<string>`
+      const valueFieldTree = this.profileForm.controls.email.fieldTree().value;
+
+      // HOWEVER, entire group is not typed
+      /**
+       * {
+            readonly name: any;
+            readonly email: any;
+          }
+       */
+      const valueValue = this.profileForm.getRawValue(); // Also for `.value`
+
+      // HOWEVER HOWEVER with the form type utils and consistency, this is still way better for functionality
+      // if you are consistent with types IMO, but risk `any` for form controls if you do not
+      // apply the mapped form types
+      /**
+       * {
+            readonly name: string;
+            readonly email: string;
+         }
+       */
+      const valueMapped: ProfileFormValue = this.profileForm.getRawValue();
     });
   }
 }
