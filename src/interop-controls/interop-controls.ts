@@ -30,6 +30,13 @@ class MyForm {
 @Service()
 class MyFormService {
   public myForm = new FormGroup(new MyForm());
+
+  public initializeForm() {
+    const tempForm = new FormGroup(
+      new MyForm({ email: '', name: 'John Email' })
+    );
+    this.myForm.setValue(tempForm.getRawValue());
+  }
 }
 
 @Component({
@@ -75,9 +82,6 @@ export class InteropControls {
   protected myForm = this.#myFormService.myForm;
 
   constructor() {
-    const tempForm = new FormGroup(
-      new MyForm({ email: '', name: 'John Email' })
-    );
-    this.myForm.setValue(tempForm.getRawValue());
+    this.#myFormService.initializeForm();
   }
 }
