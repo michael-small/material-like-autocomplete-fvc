@@ -12,6 +12,7 @@ import { email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { allEventsSignal } from './form-events';
 
 /**
  * @description Converts a form control / form group to its underlying value's type
@@ -68,6 +69,9 @@ type ProfileFormValue = SignalFormValueOf<FormGroup<ProfileForm>>;
  *
  * BUT, there is one typing bummer, but it is mitigated by these mapped types IMO
  * See the bottom of this file where I breakdown types
+ *
+ * BUT GREAT NEWS! Use my ngxtension util `allEventsSignal` and you can have all the form group
+ * state as signals! And just reference that for proper typing.
  */
 class ProfileForm {
   public readonly name = new SignalFormControl('', p => {
@@ -95,8 +99,8 @@ class ProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
   public profileForm = new FormGroup(new ProfileForm());
 
-  // TODO - grab the form value using my util, so typing preserved and full form reactive
   // https://ngxtension.dev/utilities/forms/form-events/
+  public profileFormData = allEventsSignal<ProfileFormValue>(this.profileForm);
 
   public initializeForm(value: ProfileFormValue) {
     const tempForm = this.#fb.group<SigFCsToRegularFCs<ProfileForm>>({
@@ -179,6 +183,16 @@ export class InteropControls {
             readonly email: string;
          }
        */
-    const valueMapped: ProfileFormValue = this.profileForm.getRawValue();
+    const valueMapped: {
+      readonly name: string;
+      readonly email: string;
+    } = this.profileForm.getRawValue();
+
+    // Typed!!! And throws in other form data that can be reacted to downstream of the main signal
+    const formValueFromUtil = this.#profileFormService.profileFormData; // need to still invoke this + `().value`
+
+    effect(() => {
+      console.log(formValueFromUtil());
+    });
   }
 }
