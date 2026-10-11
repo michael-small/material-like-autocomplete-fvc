@@ -20,10 +20,10 @@
     }
     <mat-autocomplete
       #auto="matAutocomplete"
-      [displayWith]="displayWith"
+      [displayWith]="displayWithFn"
       (optionSelected)="selectOption($event.option.value)">
       @for (option of filteredOptions(); track option) {
-        <mat-option [value]="option">{{ valFn()(option) }}</mat-option>
+        <mat-option [value]="option">{{ valueFn()(option) }}</mat-option>
       }
     </mat-autocomplete>
   </mat-form-field>

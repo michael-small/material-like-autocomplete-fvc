@@ -10,7 +10,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { VERSION as CDK_VERSION } from '@angular/cdk';
 import { VERSION as MAT_VERSION } from '@angular/material/core';
 import { Component } from '@angular/core';
-import { AutocompleteDisplayRoot } from './example/autocomplete-display-example';
+import { AutocompleteDisplayRoot } from './autocomplete-display/autocomplete-display';
 
 console.info('Angular CDK version', CDK_VERSION.full);
 console.info('Angular Material version', MAT_VERSION.full);
