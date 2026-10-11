@@ -56,9 +56,16 @@ type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
     readonly email: string;
    } 
  */
-type EmailProfileFormValue = SignalFormValueOf<FormGroup<EmailProfileForm>>;
+type ProfileFormValue = SignalFormValueOf<FormGroup<ProfileForm>>;
 
-class EmailProfileForm {
+/**
+ * @description I used to do this pattern but with `new FormControl` etc. Now I can
+ * - Declarative cross form field validation with typing
+ * - Declarative rules like `disabled`
+ * - Messages for errors
+ * - Drop in signal form schemas
+ */
+class ProfileForm {
   public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
   });
@@ -80,25 +87,25 @@ class EmailProfileForm {
 }
 
 @Service()
-class EmailProfileFormService {
+class ProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
-  public emailProfileForm = new FormGroup(new EmailProfileForm());
+  public profileForm = new FormGroup(new ProfileForm());
 
-  public initializeForm(value: EmailProfileFormValue) {
-    const tempForm = this.#fb.group<SigFCsToRegularFCs<EmailProfileForm>>({
+  public initializeForm(value: ProfileFormValue) {
+    const tempForm = this.#fb.group<SigFCsToRegularFCs<ProfileForm>>({
       name: this.#fb.control(value.name),
       email: this.#fb.control(value.email),
     });
 
-    this.emailProfileForm.setValue(tempForm.getRawValue());
+    this.profileForm.setValue(tempForm.getRawValue());
   }
 }
 
 @Component({
   selector: 'app-interop-controls',
   template: `
-    <form [formGroup]="emailProfileForm">
-      @let controls = emailProfileForm.controls;
+    <form [formGroup]="ProfileForm">
+      @let controls = ProfileForm.controls;
       <mat-form-field>
         <mat-label>Name</mat-label>
         <input matInput [formField]="controls.name.fieldTree" />
@@ -120,7 +127,7 @@ class EmailProfileFormService {
       </mat-form-field>
     </form>
 
-    <pre>Form raw value: {{ emailProfileForm.getRawValue() | json }}</pre>
+    <pre>Form raw value: {{ ProfileForm.getRawValue() | json }}</pre>
   `,
   imports: [
     MatFormField,
@@ -132,11 +139,11 @@ class EmailProfileFormService {
   ],
 })
 export class InteropControls {
-  readonly #emailProfileFormService = inject(EmailProfileFormService);
-  protected emailProfileForm = this.#emailProfileFormService.emailProfileForm;
+  readonly #profileFormService = inject(ProfileFormService);
+  protected ProfileForm = this.#profileFormService.profileForm;
 
   constructor() {
-    this.#emailProfileFormService.initializeForm({
+    this.#profileFormService.initializeForm({
       email: 'Test',
       name: 'John Email',
     });
