@@ -174,7 +174,16 @@ class ProfileFormService {
       </mat-form-field>
     </form>
 
-    <pre>Form raw value: {{ profileForm.getRawValue() | json }}</pre>
+    <!-- Ban this too -->
+    <pre>{{ profileForm.getRawValue() | json }}</pre>
+
+    <!-- Ban this as well -->
+    <pre>{{ profileForm.value }}</pre>
+
+    <!-- Allow this -->
+    <pre>{{ profileFormData().value }}</pre>
+    <!-- Allow this -->
+    <pre>{{ profileForm.controls.email.fieldTree().value() }}</pre>
   `,
   imports: [
     MatFormField,
@@ -188,12 +197,23 @@ class ProfileFormService {
 export class InteropControls {
   readonly #profileFormService = inject(ProfileFormService);
   protected profileForm = this.#profileFormService.profileForm;
+  protected profileFormData = this.#profileFormService.profileFormData;
 
   constructor() {
     this.#profileFormService.initializeForm({
       email: 'Test',
       name: 'John Email',
     });
+
+    // Ban these following four
+    const banThis = this.profileForm.value;
+    const banThisToo = this.profileForm.getRawValue();
+    const alsoBanThis = this.profileForm.controls.email.value;
+    const alsoBanThisToo = this.profileForm.controls.email.getRawValue();
+
+    // But allow these
+    const thisIsValid = this.profileForm.controls.email.fieldTree().value;
+    const alsoThisIsValid = this.profileFormData().value;
 
     // `fieldTree` of each control is properly typed
     // `WritableSignal<string>`

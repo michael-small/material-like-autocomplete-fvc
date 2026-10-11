@@ -1,4 +1,5 @@
 // https://ngxtension.dev/utilities/forms/form-events/
+/* eslint-disable local/no-form-control-value-access -- Raw values seed FormEventData. */
 
 import { Injector, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
