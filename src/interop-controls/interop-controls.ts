@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, effect, inject, Service } from '@angular/core';
+import { Component, effect, inject, Injector, Service } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
@@ -7,13 +7,32 @@ import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 class MyForm {
-  name = new SignalFormControl('', p => {
-    required(p, { message: 'Field required' });
-  });
-  email = new SignalFormControl('', p => {
-    email(p, { message: 'Must be an email' });
-    required(p, { message: 'Field required' });
-  });
+  readonly #injectRef = inject(Injector);
+  name = new SignalFormControl(
+    '',
+    p => {
+      required(p, { message: 'Field required' });
+    },
+    { injector: this.#injectRef }
+  );
+  email = new SignalFormControl(
+    '',
+    p => {
+      required(p, { message: 'Field required' });
+      email(p, {
+        when: () => {
+          return this.name.fieldTree().value() === 'John Email';
+        },
+        message: 'Must be an email',
+      });
+    },
+    { injector: this.#injectRef }
+  );
+
+  constructor(value?: { name: string; email: string }) {
+    this.name.setValue(value?.name);
+    this.email.setValue(value?.email);
+  }
 }
 
 @Service()
@@ -24,14 +43,12 @@ class MyFormService {
 @Component({
   selector: 'app-interop-controls',
   template: `
-    <form [formGroup]="myFormService.myForm">
+    <form [formGroup]="myForm">
       <mat-form-field>
         <mat-label>Name</mat-label>
-        <input
-          matInput
-          [formField]="myFormService.myForm.controls.name.fieldTree" />
+        <input matInput [formField]="myForm.controls.name.fieldTree" />
         @for (
-          error of myFormService.myForm.controls.name.fieldTree().errors();
+          error of myForm.controls.name.fieldTree().errors();
           track error.kind
         ) {
           <mat-error>{{ error.message ?? error.kind }}</mat-error>
@@ -40,11 +57,9 @@ class MyFormService {
 
       <mat-form-field>
         <mat-label>Email</mat-label>
-        <input
-          matInput
-          [formField]="myFormService.myForm.controls.email.fieldTree" />
+        <input matInput [formField]="myForm.controls.email.fieldTree" />
         @for (
-          error of myFormService.myForm.controls.email.fieldTree().errors();
+          error of myForm.controls.email.fieldTree().errors();
           track error.kind
         ) {
           <mat-error>{{ error.message ?? error.kind }}</mat-error>
@@ -52,7 +67,7 @@ class MyFormService {
       </mat-form-field>
     </form>
 
-    <pre>{{ myFormService.myForm.getRawValue() | json }}</pre>
+    <pre>{{ myForm.getRawValue() | json }}</pre>
   `,
   imports: [
     MatFormField,
@@ -64,13 +79,13 @@ class MyFormService {
   ],
 })
 export class InteropControls {
-  protected myFormService = inject(MyFormService);
+  readonly #myFormService = inject(MyFormService);
+  protected myForm = this.#myFormService.myForm;
 
   constructor() {
-    effect(() => {
-      console.log(
-        this.myFormService.myForm.controls.email.fieldTree().errors()
-      );
-    });
+    const tempForm = new FormGroup(
+      new MyForm({ email: '', name: 'John Email' })
+    );
+    this.myForm.setValue(tempForm.getRawValue());
   }
 }
