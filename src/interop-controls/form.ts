@@ -34,7 +34,7 @@ class ProfileForm {
   public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
     disabled(p, {
-      when: () => this.#extData().loading,
+      when: () => (this.#extData().loading ? 'Loading...' : false),
     });
   });
   public readonly email = new SignalFormControl('', p => {

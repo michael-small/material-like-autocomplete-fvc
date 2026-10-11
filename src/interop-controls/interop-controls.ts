@@ -27,6 +27,14 @@ import { ProfileFormService } from './form';
           }}</mat-error>
         }
       </mat-form-field>
+      @if (controls.name.fieldTree().disabled()) {
+        @for (
+          reason of controls.name.fieldTree().disabledReasons();
+          track reason
+        ) {
+          <span>{{ reason.message }}</span>
+        }
+      }
 
       <mat-form-field>
         <mat-label>Email</mat-label>
