@@ -41,7 +41,7 @@ export type User = {
     <button type="button" (click)="addOption()">Add Option</button>
 
     <!-- This stuff isn't fully baked, WIP -->
-    <!-- <pre>formControl value: {{ formControl.value | json }}</pre>
+    <pre>formControl value: {{ formControl.value | json }}</pre>
     <app-autocomplete-display-example
       [formControl]="formControl"
       [options]="options()"
@@ -51,7 +51,7 @@ export type User = {
     <app-autocomplete-display-example
       [formField]="formField"
       [options]="options()"
-      [valFnInput]="user => user.name" /> -->
+      [valFnInput]="user => user.name" />
   `,
   styleUrl: 'autocomplete-display-example.css',
   imports: [
@@ -120,6 +120,8 @@ export class AutocompleteDisplayExample<
   // public readonly displayFnInput = input.required<(user: T) => string>();
 
   protected valFn = computed(() => this.valFnInput());
+  protected readonly displayWith = (user: T | null): string =>
+    user ? this.valFn()(user) : '';
 
   protected readonly rawValue = transformedValue(this.value, {
     parse: (name: string): { value: T | null } => ({
