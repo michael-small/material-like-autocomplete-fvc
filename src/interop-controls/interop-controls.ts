@@ -1,5 +1,5 @@
 import { JsonPipe } from '@angular/common';
-import { Component, effect, inject, Injector, Service } from '@angular/core';
+import { Component, inject, Service } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
@@ -7,27 +7,19 @@ import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 class MyForm {
-  readonly #injectRef = inject(Injector);
-  name = new SignalFormControl(
-    '',
-    p => {
-      required(p, { message: 'Field required' });
-    },
-    { injector: this.#injectRef }
-  );
-  email = new SignalFormControl(
-    '',
-    p => {
-      required(p, { message: 'Field required' });
-      email(p, {
-        when: () => {
-          return this.name.fieldTree().value() === 'John Email';
-        },
-        message: 'Must be an email',
-      });
-    },
-    { injector: this.#injectRef }
-  );
+  name = new SignalFormControl('', p => {
+    required(p, { message: 'Field required' });
+  });
+  email = new SignalFormControl('', p => {
+    required(p, { message: 'Field required' });
+    email(p, {
+      when: () => {
+        const nameValue = this.name.fieldTree().value();
+        return nameValue === 'John Email';
+      },
+      message: 'Must be an email',
+    });
+  });
 
   constructor(value?: { name: string; email: string }) {
     this.name.setValue(value?.name);
