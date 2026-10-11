@@ -56,7 +56,7 @@ type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
     readonly email: string;
    } 
  */
-type MyFormValue = SignalFormValueOf<FormGroup<EmailProfileForm>>;
+type EmailProfileFormValue = SignalFormValueOf<FormGroup<EmailProfileForm>>;
 
 class EmailProfileForm {
   public readonly name = new SignalFormControl('', p => {
@@ -84,7 +84,7 @@ class EmailProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
   public emailProfileForm = new FormGroup(new EmailProfileForm());
 
-  public initializeForm(value: MyFormValue) {
+  public initializeForm(value: EmailProfileFormValue) {
     const tempForm = this.#fb.group<SigFCsToRegularFCs<EmailProfileForm>>({
       name: this.#fb.control(value.name),
       email: this.#fb.control(value.email),
