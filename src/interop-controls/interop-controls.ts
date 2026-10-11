@@ -155,32 +155,30 @@ export class InteropControls {
       name: 'John Email',
     });
 
-    effect(() => {
-      // `fieldTree` of each control is properly typed
-      // `WritableSignal<string>`
-      const valueFieldTree = this.profileForm.controls.email.fieldTree().value;
+    // `fieldTree` of each control is properly typed
+    // `WritableSignal<string>`
+    const valueFieldTree = this.profileForm.controls.email.fieldTree().value;
 
-      // HOWEVER, the entire group has the field names and shape consistent, but `any` values
-      // This is a restriction for `SignalFormControl` when you can't read the `fieldTree` directly.
-      // https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
-      /**
+    // HOWEVER, the entire group has the field names and shape consistent, but `any` values
+    // This is a restriction for `SignalFormControl` when you can't read the `fieldTree` directly.
+    // https://angular.dev/guide/forms/signals/migration#binding-signalformcontrol
+    /**
        * {
             readonly name: any;
             readonly email: any;
           }
        */
-      const valueValue = this.profileForm.getRawValue(); // Also for `.value`
+    const valueValue = this.profileForm.getRawValue(); // Also for `.value`
 
-      // HOWEVER HOWEVER with the form type utils and consistency, this is still way better for functionality
-      // if you are consistent with types IMO, but risk `any` for form controls if you do not
-      // apply the mapped form types
-      /**
+    // HOWEVER HOWEVER with the form type utils and consistency, this is still way better for functionality
+    // if you are consistent with types IMO, but risk `any` for form controls if you do not
+    // apply the mapped form types
+    /**
        * {
             readonly name: string;
             readonly email: string;
          }
        */
-      const valueMapped: ProfileFormValue = this.profileForm.getRawValue();
-    });
+    const valueMapped: ProfileFormValue = this.profileForm.getRawValue();
   }
 }
