@@ -7,10 +7,10 @@ import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 class MyForm {
-  name = new SignalFormControl('', p => {
+  public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
   });
-  email = new SignalFormControl('', p => {
+  public readonly email = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
     email(p, {
       when: () => {
@@ -82,6 +82,12 @@ export class InteropControls {
   protected myForm = this.#myFormService.myForm;
 
   constructor() {
+    // IMPORTANT!
+    //     Will not work in `ngOnInit`,
+    //     since an injection context follows from:
+    // --> `SignalFormControl` needs one
+    // --> So the `MyForm` class needs one
+    // --> So the service's form group needs one
     this.#myFormService.initializeForm();
   }
 }
