@@ -11,14 +11,28 @@ import { VERSION as CDK_VERSION } from '@angular/cdk';
 import { VERSION as MAT_VERSION } from '@angular/material/core';
 import { Component } from '@angular/core';
 import { AutocompleteDisplayRoot } from './autocomplete-display/autocomplete-display';
+import { InteropControls } from './interop-controls/interop-controls';
 
 console.info('Angular CDK version', CDK_VERSION.full);
 console.info('Angular Material version', MAT_VERSION.full);
 
 @Component({
   selector: 'app-root',
-  template: ` <app-autocomplete-display-root /> `,
-  imports: [AutocompleteDisplayRoot],
+  template: `
+    <h1>Form Experimentation</h1>
+
+    <h2>
+      Started out with this example, for a custom Material autocomplete for
+      reactive/signal forms
+    </h2>
+    <app-autocomplete-display-root />
+
+    <h2>
+      Working on this on how to use signal form benefits in reactive forms
+    </h2>
+    <app-interop-controls />
+  `,
+  imports: [AutocompleteDisplayRoot, InteropControls],
 })
 class Root {}
 

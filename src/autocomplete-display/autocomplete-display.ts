@@ -3,7 +3,6 @@ import { FormField, required, validate } from '@angular/forms/signals';
 import { JsonPipe } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form } from '@angular/forms/signals';
-import { InteropControls } from '../interop-controls/interop-controls';
 import { AutocompleteDisplayField } from './autocomplete-display-field';
 
 export type UserAutocomplete = {
@@ -13,9 +12,7 @@ export type UserAutocomplete = {
 @Component({
   selector: 'app-autocomplete-display-root',
   template: `
-    <app-interop-controls />
-
-    <button type="button" (click)="addOption()">Add Option</button>
+    <button type="button" (click)="addOption()">Add random Doug option</button>
 
     <pre>formControl value: {{ formControl.value | json }}</pre>
     <app-autocomplete-display-field
@@ -29,13 +26,7 @@ export type UserAutocomplete = {
       [options]="options()"
       [valFnInput]="user => user.name" />
   `,
-  imports: [
-    AutocompleteDisplayField,
-    ReactiveFormsModule,
-    JsonPipe,
-    FormField,
-    InteropControls,
-  ],
+  imports: [AutocompleteDisplayField, ReactiveFormsModule, JsonPipe, FormField],
 })
 export class AutocompleteDisplayRoot {
   readonly #options = [{ name: 'Mary' }, { name: 'Shelley' }, { name: 'Igor' }];
@@ -60,6 +51,9 @@ export class AutocompleteDisplayRoot {
   });
 
   protected addOption() {
-    this.options.update(o => [...o, { name: 'Doug' }]);
+    this.options.update(o => [
+      ...o,
+      { name: 'Doug ' + Math.floor(Math.random() * 1000) },
+    ]);
   }
 }
