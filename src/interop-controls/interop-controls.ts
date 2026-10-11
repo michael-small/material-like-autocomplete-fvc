@@ -56,8 +56,9 @@ type SigFCsToRegularFCs<T extends { [K in keyof T]: AbstractControl }> =
     readonly email: string;
    } 
  */
-type MyFormValue = SignalFormValueOf<FormGroup<MyForm>>;
-class MyForm {
+type MyFormValue = SignalFormValueOf<FormGroup<EmailProfileForm>>;
+
+class EmailProfileForm {
   public readonly name = new SignalFormControl('', p => {
     required(p, { message: 'Field required' });
   });
@@ -79,48 +80,47 @@ class MyForm {
 }
 
 @Service()
-class MyFormService {
+class EmailProfileFormService {
   readonly #fb = inject(NonNullableFormBuilder);
-  public myForm = new FormGroup(new MyForm());
+  public emailProfileForm = new FormGroup(new EmailProfileForm());
 
   public initializeForm(value: MyFormValue) {
-    const tempForm = this.#fb.group<SigFCsToRegularFCs<MyForm>>({
+    const tempForm = this.#fb.group<SigFCsToRegularFCs<EmailProfileForm>>({
       name: this.#fb.control(value.name),
       email: this.#fb.control(value.email),
     });
 
-    this.myForm.setValue(tempForm.getRawValue());
+    this.emailProfileForm.setValue(tempForm.getRawValue());
   }
 }
 
 @Component({
   selector: 'app-interop-controls',
   template: `
-    <form [formGroup]="myForm">
+    <form [formGroup]="emailProfileForm">
+      @let controls = emailProfileForm.controls;
       <mat-form-field>
         <mat-label>Name</mat-label>
-        <input matInput [formField]="myForm.controls.name.fieldTree" />
-        @for (
-          error of myForm.controls.name.fieldTree().errors();
-          track error.kind
-        ) {
-          <mat-error>{{ error.message ?? error.kind }}</mat-error>
+        <input matInput [formField]="controls.name.fieldTree" />
+        @for (error of controls.name.fieldTree().errors(); track error.kind) {
+          <mat-error>{{
+            error.message ?? 'Error of type: ' + error.kind
+          }}</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Email</mat-label>
-        <input matInput [formField]="myForm.controls.email.fieldTree" />
-        @for (
-          error of myForm.controls.email.fieldTree().errors();
-          track error.kind
-        ) {
-          <mat-error>{{ error.message ?? error.kind }}</mat-error>
+        <input matInput [formField]="controls.email.fieldTree" />
+        @for (error of controls.email.fieldTree().errors(); track error.kind) {
+          <mat-error>{{
+            error.message ?? 'Error of type: ' + error.kind
+          }}</mat-error>
         }
       </mat-form-field>
     </form>
 
-    <pre>{{ myForm.getRawValue() | json }}</pre>
+    <pre>Form raw value: {{ emailProfileForm.getRawValue() | json }}</pre>
   `,
   imports: [
     MatFormField,
@@ -132,10 +132,13 @@ class MyFormService {
   ],
 })
 export class InteropControls {
-  readonly #myFormService = inject(MyFormService);
-  protected myForm = this.#myFormService.myForm;
+  readonly #emailProfileFormService = inject(EmailProfileFormService);
+  protected emailProfileForm = this.#emailProfileFormService.emailProfileForm;
 
   constructor() {
-    this.#myFormService.initializeForm({ email: 'Test', name: 'John Email' });
+    this.#emailProfileFormService.initializeForm({
+      email: 'Test',
+      name: 'John Email',
+    });
   }
 }
