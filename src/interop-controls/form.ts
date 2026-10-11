@@ -73,15 +73,24 @@ export class ProfileFormService {
     initialValue: true,
   });
 
+  // Form builder didn't seem to work making this group exactly like this, but
+  // the controls themselves are non-nullable
   public profileForm = new FormGroup(
     new ProfileForm({ name: '', email: '' }, this.loading)
   );
 
   // https://ngxtension.dev/utilities/forms/form-events/
-  // Copy the source code (self contained one file with no non-Angular 1st party improts)
   public profileFormData = allEventsSignal<ProfileFormValue>(this.profileForm);
 
   public initializeForm(value: ProfileFormValue) {
+    // NEVER re-assign a reactive form control/group/array
+    // That causes all sorts of issues, including losing reactivity at classfield time
+    // Hence one of the same shape is made so it can be patched into the real form
+    //
+    // You could just pass the raw values in the `setValue`,
+    // but for the projects I work on, we use `new SomeGroup(...)`
+    // with data we GET and the constructor sets the data internally. So doing a seperate group and then
+    // setting the value of the form service class to this temp class is consistent for us.
     const tempForm = this.#fb.group<SigFCsToRegularFCs<ProfileForm>>({
       name: this.#fb.control(value.name),
       email: this.#fb.control(value.email),
