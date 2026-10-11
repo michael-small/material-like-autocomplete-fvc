@@ -1,3 +1,7 @@
+// https://ngxtension.dev/utilities/forms/form-events/
+// Copy the source code (self contained one file with no non-Angular 1st party improts)
+import { allEventsSignal } from './form-events';
+
 import { JsonPipe } from '@angular/common';
 import {
   Component,
@@ -19,12 +23,8 @@ import { disabled, email, FormField, required } from '@angular/forms/signals';
 import { SignalFormControl } from '@angular/forms/signals/compat';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
-// https://ngxtension.dev/utilities/forms/form-events/
-// Copy the source code (self contained one file with no non-Angular 1st party improts)
-import { allEventsSignal } from './form-events';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map, startWith, timer } from 'rxjs';
+import { map, timer } from 'rxjs';
 
 /**
  * @description Converts a form control / form group to its underlying value's type
