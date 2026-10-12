@@ -7,6 +7,7 @@ import { FormField } from '@angular/forms/signals';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileFormService } from './form';
+import { EmailField } from './child-with-input';
 
 @Component({
   selector: 'app-interop-controls',
@@ -36,15 +37,9 @@ import { ProfileFormService } from './form';
         }
       }
 
-      <mat-form-field>
-        <mat-label>Email</mat-label>
-        <input matInput [formField]="controls.email.fieldTree" />
-        @for (error of controls.email.fieldTree().errors(); track error.kind) {
-          <mat-error>{{
-            error.message ?? 'Error of type: ' + error.kind
-          }}</mat-error>
-        }
-      </mat-form-field>
+      <!-- The field is properly reactive from the input :0 
+       (toSignal of reactive form fields didn't work) -->
+      <app-email-field [emailField]="controls.email.fieldTree" />
     </form>
 
     <!-- Banned by linnting this too -->
@@ -78,6 +73,7 @@ ALLOWED profileForm.controls.email.fieldTree().value() {{
     FormField,
     JsonPipe,
     ReactiveFormsModule,
+    EmailField,
   ],
 })
 export class InteropControls {
