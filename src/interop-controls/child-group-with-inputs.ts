@@ -1,11 +1,20 @@
-import { Component, effect, input } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { type ProfileForm } from './form';
 import { FormField } from '@angular/forms/signals';
 import { EmailField } from './child-with-input';
-
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { map, switchMap } from 'rxjs';
 @Component({
   selector: 'app-child-group-with-inputs',
   template: `
@@ -46,16 +55,28 @@ import { EmailField } from './child-with-input';
   ],
 })
 export class ChildGroupWithInputs {
+  readonly #destroyRef = inject(DestroyRef);
+
   public readonly group = input.required<FormGroup<ProfileForm>>();
 
-  constructor() {
-    effect(() => {
-      const name = this.group().controls.name.fieldTree();
-      const email = this.group().controls.email.fieldTree();
+  loggable = computed(() => {
+    const name = this.group().controls.name.fieldTree();
+    const email = this.group().controls.email.fieldTree();
 
-      console.log(
-        `form fields: name ${name.value()}(valid: ${name.valid()}) and email ${email.value()} (valid: ${email.valid()})`
-      );
+    return `name ${name.value()}(valid: ${name.valid()}) and email ${email.value()} (valid: ${email.valid()})`;
+  });
+
+  loggable$ = toObservable(this.group).pipe(
+    switchMap(group => group.valueChanges)
+  );
+
+  constructor() {
+    effect(() => console.log('loggable', this.loggable()));
+
+    afterNextRender(() => {
+      this.loggable$
+        .pipe(takeUntilDestroyed(this.#destroyRef))
+        .subscribe(val => console.log('loggable$', val));
     });
   }
 }
