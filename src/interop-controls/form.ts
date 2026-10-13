@@ -28,7 +28,7 @@ type ProfileFormValue = SignalFormValueOf<FormGroup<ProfileForm>>;
  * BUT GREAT NEWS! Use my ngxtension util `allEventsSignal` and you can have all the form group
  * state as signals! And just reference that for proper typing.
  */
-class ProfileForm {
+export class ProfileForm {
   #extData = signal({ loading: false });
 
   public readonly name = new SignalFormControl('', p => {

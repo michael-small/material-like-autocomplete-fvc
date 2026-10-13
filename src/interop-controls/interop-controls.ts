@@ -2,12 +2,9 @@
 import { JsonPipe } from '@angular/common';
 import { Component, effect, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FormField } from '@angular/forms/signals';
-
-import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileFormService } from './form';
-import { EmailField } from './child-with-input';
+import { ChildGroupWithInputs } from './child-group-with-inputs';
 
 @Component({
   selector: 'app-interop-controls',
@@ -17,30 +14,7 @@ import { EmailField } from './child-with-input';
       name is John Email.
     </p>
 
-    <form [formGroup]="profileForm">
-      @let controls = profileForm.controls;
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [formField]="controls.name.fieldTree" />
-        @for (error of controls.name.fieldTree().errors(); track error.kind) {
-          <mat-error>{{
-            error.message ?? 'Error of type: ' + error.kind
-          }}</mat-error>
-        }
-      </mat-form-field>
-      @if (controls.name.fieldTree().disabled()) {
-        @for (
-          reason of controls.name.fieldTree().disabledReasons();
-          track reason
-        ) {
-          <span>{{ reason.message }}</span>
-        }
-      }
-
-      <!-- The field is properly reactive from the input :0 
-       (toSignal of reactive form fields didn't work) -->
-      <app-email-field [emailField]="controls.email.fieldTree" />
-    </form>
+    <app-child-group-with-inputs [group]="profileForm" />
 
     <!-- Banned by linnting this too -->
     <pre>
@@ -67,13 +41,10 @@ ALLOWED profileForm.controls.email.fieldTree().value() {{
     </p>
   `,
   imports: [
-    MatFormField,
-    MatError,
     MatInputModule,
-    FormField,
     JsonPipe,
     ReactiveFormsModule,
-    EmailField,
+    ChildGroupWithInputs,
   ],
 })
 export class InteropControls {
