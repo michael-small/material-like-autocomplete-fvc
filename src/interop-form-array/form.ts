@@ -62,15 +62,21 @@ export class ProfilesFormService {
   }
 
   public addProfileGroup() {
-    const profileForm = runInInjectionContext(
-      this.#injector,
-      () => new ProfileForm({ name: 'test', email: '' }, this.loading)
+    const profileForm = createSignalFormGroup(
+      () => new ProfileForm({ name: 'test', email: '' }, this.loading),
+      this.#injector
     );
-
     this.profilesForm.controls.profiles.push(new FormGroup(profileForm));
   }
 
   public removeProfileGroup(index: number) {
     this.profilesForm.controls.profiles.removeAt(index);
   }
+}
+
+export function createSignalFormGroup<T>(
+  create: () => T,
+  injector: Injector
+): T {
+  return runInInjectionContext(injector, create);
 }
