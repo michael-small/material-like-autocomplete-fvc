@@ -12,6 +12,7 @@ import { VERSION as MAT_VERSION } from '@angular/material/core';
 import { Component } from '@angular/core';
 import { AutocompleteDisplayRoot } from './autocomplete-display/autocomplete-display';
 import { InteropControls } from './interop-controls/interop-controls';
+import { ParentOfFormArray } from './interop-form-array/parent';
 
 console.info('Angular CDK version', CDK_VERSION.full);
 console.info('Angular Material version', MAT_VERSION.full);
@@ -28,6 +29,8 @@ console.info('Angular Material version', MAT_VERSION.full);
       >
     </p>
 
+    <app-parent-of-form-array />
+
     <h2>
       Started out with this example, for a custom Material autocomplete for
       reactive/signal forms
@@ -39,7 +42,7 @@ console.info('Angular Material version', MAT_VERSION.full);
     </h2>
     <app-interop-controls />
   `,
-  imports: [AutocompleteDisplayRoot, InteropControls],
+  imports: [AutocompleteDisplayRoot, InteropControls, ParentOfFormArray],
 })
 class Root {}
 
